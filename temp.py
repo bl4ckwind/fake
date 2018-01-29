@@ -3,6 +3,7 @@ from nltk.tokenize import sent_tokenize
 import re
 from pycorenlp import StanfordCoreNLP
 from pprint import pprint
+import networkx as nx
 #import wolframalpha.wap as wap
 
 """
@@ -28,28 +29,57 @@ def main():
     data = tools.csv_reader("dataset/train.tsv", sep="\t")
 
 
-    for row in data[0:25]:
-        statement = row[2]
-        sentences = sent_tokenize(statement)
-        for sent in sentences:
-            if re.search(r'\sis\s', sent):
-                out = nlpRequest(nlp, sent)
-                pprint(out)
-                tokens = out['sentences'][0]['tokens']
-                for token in tokens:
-                    if 'ner' in token.keys():
-                        print(token['ner'])
+    sent = RowToSentences(data[1])
+    dep = analyseDependencies(sent[0], nlp)
+    DependenciesToGraph(dep)
+
+   
 
 
 
-def nlpRequest(nlp, text):
+def nlpRequest(nlp, text, annotators):
     text = (text)
     output = nlp.annotate(text, properties={
-        'annotators': 'tokenize,pos,regexner, depparse', # tokenize,ssplit,pos,depparse,parse
+        'annotators': annotators, # tokenize,ssplit,pos,depparse,parse
         'outputFormat': 'json'
         })
 
     return output
 
+
+def RowToSentences(row):
+    statement = row[2]
+    sentences = sent_tokenize(statement)
+    return sentences
+
+def analyseDependencies(sentence, nlp):
+    out = nlpRequest(nlp, sentence, 'depparse')
+    dependencies = out['sentences'][0]['basicDependencies']
+    return dependencies
+
+def DependenciesToGraph(dependencies):
+    G = nx.Graph()
+    for token in dependencies:
+        G.add_node(token['dependent'], token=token['dependentGloss'], dep=token['dep'])
+    nods = list(G.nodes)
+    for i in range(1, len(list(G.nodes))):
+        print("ok")
+
+
+    
+
+def trash():
+    for row in data:
+        statement = row[2]
+        sentences = sent_tokenize(statement)
+        for sent in sentences:
+            if re.search(r'\sis\s', sent) and len(sent) < 25:
+                out = nlpRequest(nlp, sent, 'depparse')
+                pprint(out)
+                tokens = out['sentences'][0]['tokens']
+                for token in tokens:
+                    if 'ner' in token.keys():
+                        print(token['ner'])
+                
 if __name__ == '__main__':
     main()
