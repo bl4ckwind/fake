@@ -4,6 +4,7 @@ import re
 from pycorenlp import StanfordCoreNLP
 from pprint import pprint
 import networkx as nx
+import wiki
 #import wolframalpha.wap as wap
 
 """
@@ -30,8 +31,12 @@ def main():
 
 
     sent = RowToSentences(data[1])
-    dep = analyseDependencies(sent[0], nlp)
-    DependenciesToGraph(dep)
+    dep = analyseDependencies("President Obama is a Muslim", nlp)
+    print("Satzlänge:", len(dep))
+    G = DependenciesToGraph(dep)
+    regenten = determineSubjObj(G)
+
+    print(wiki.wikiSearch(regenten[0]))
 
    
 
@@ -59,11 +64,49 @@ def analyseDependencies(sentence, nlp):
 
 def DependenciesToGraph(dependencies):
     G = nx.Graph()
+    #pprint(dependencies)
     for token in dependencies:
-        G.add_node(token['dependent'], token=token['dependentGloss'], dep=token['dep'])
-    nods = list(G.nodes)
-    for i in range(1, len(list(G.nodes))):
-        print("ok")
+        G.add_node(token['dependent'], gov=token['governor'], token=token['dependentGloss'], dep=token['dep'])
+    for token in dependencies:
+        if token['governor'] != 0:
+            G.add_edge(token['dependent'], token['governor'])
+    #pprint(G.nodes.data())
+    #pprint(G.edges)
+    return G
+        
+
+def determineSubjObj(G):
+    comp_subj = ""
+    comp_obj = ""
+    # ROOT is OBJ and NSUBJ is SUBJ
+    for node in list(G.nodes):
+        node_data = G.nodes[node]
+        if node_data['dep'] == 'ROOT':
+            obj = node
+        if node_data['dep'] == 'nsubj':
+            subj = node
+    # Add compounds and adjectives to SUBJ/OBJ
+    for node in list(G.nodes):
+        node_data = G.nodes[node]
+        if node_data['dep'] == 'compound' or node_data['dep'] == 'amod':
+            #print("Found compound")
+            if (node, node_data['gov']) in list(G.edges):
+                if node_data['gov'] == obj:
+                    comp_obj += node_data['token'] + " "
+                if node_data['gov'] == subj:
+                    comp_subj += node_data['token'] + " "
+
+    comp_subj += G.nodes[subj]['token']
+    comp_obj += G.nodes[obj]['token']
+
+    print(comp_subj, comp_obj)
+    return (comp_subj, comp_obj)
+
+
+
+
+                    
+
 
 
     

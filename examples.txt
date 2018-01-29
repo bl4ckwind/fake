@@ -1,4 +1,12 @@
 Says Rick Perry is a 25-year incumbent.
 Turkey is an Arab country.
 Nikki Haley is an immigrant.
+root = imigrant
+nsubj = Haley
+compound = Nikki
+
+
 President Obama is a Muslim.
+root = muslim
+nsubj = obama
+compound = president
