@@ -84,6 +84,13 @@ def csv_reader(path, sep=","):
                 dump.append(row)
     return dump
 
+def csv_writer(path, dump):
+    with open("CSV/" + path + ".csv", "w", encoding="utf8", newline="") as file:
+        csvw = csv.writer(file)
+        for row in dump:
+            csvw.writerow(row)
+        file.close()
+
 
 def csv_maker(data, csvname, csvname_non):
     capt_aust = []

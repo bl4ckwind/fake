@@ -1,14 +1,19 @@
 import wikipedia
 
 def main():
-    pass
+    wikiSearch("Peregrin")
 
 
 def wikiSearch(term):
     print("### WikiSearch ###")
-    nikki = wikipedia.search(term)
-    print("# Found", len(nikki), "search results for", term, "#\n# Most likely:", nikki[0], "#")
-    nikki = wikipedia.page(nikki[0])
+    nikki_n = wikipedia.search(term, results=10)
+    try:
+        best = nikki_n[0]
+        nikki = wikipedia.page(best)
+    except:
+        best = nikki_n[1]
+        nikki = wikipedia.page(best)
+    print("# Found", len(nikki_n), "search results for", term, "#\n# Most likely:", best, "#")
 
     return nikki.content
 
