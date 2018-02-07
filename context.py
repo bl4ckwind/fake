@@ -16,7 +16,7 @@ def main(text, keywords):
             print("Found", len(value), "sentence occassions for keyword", k)
             if k != 'collocation':
                 print("Found", len(freq[k]), "token occassions for keyword", k)
-    print("\n\n")
+    print("\n")
     #pprint(occ['collocation'])
     #"""
 

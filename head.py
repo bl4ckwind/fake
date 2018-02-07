@@ -120,13 +120,15 @@ def weighter(keywords, wikiContent, wiki_n_occsent, wiki_n_token, wiki_n_sent, w
     #weights_perc = [(weight) * (100/sum(multiplier)*mult) for weight, mult in zip(weights, multiplier)]
     summa = 0
     print("Features")
+    print(weights)
+    """
     for i in range(len(weights)):
         print(weights[i])
         #print(weights_perc[i])
         #print("------")
         summa += weights[i]
     #print(summa)
-
+    """
     return weights
 
 
@@ -225,5 +227,4 @@ def trash():
                         print(token['ner'])
                 
 if __name__ == '__main__':
-    # "is a hobbit", "is an elf", "is a dwarf", "is a character"
     main("Frodo is a hobbit")
