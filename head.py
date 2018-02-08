@@ -38,6 +38,7 @@ def main(statement):
     dep = analyseDependencies(statement, nlp)
     print("Satzlänge:", len(dep))
     G = DependenciesToGraph(dep)
+    print("Graph data", list(G.nodes.data()))
     ### Determine SUBJ and OBJ of a is-sentence
     keywords = determineSubjObj(G) #subj 0, obj 1
 
@@ -84,15 +85,15 @@ def weighter(keywords, wikiContent, wiki_n_occsent, wiki_n_token, wiki_n_sent, w
 
     ## WIKI WEIGHTS
 
-    #1 Anzahl der Sätze, die das Objekt enthalten / Anzahl aller Sätze
+    # 1 Anzahl der Sätze, die das Objekt enthalten / Anzahl aller Sätze
     w_1 = len(wiki_n_occsent[obj]) / wiki_n_sent
-    #2 Anzahl der Sätze, die das Objekt enthalten / Anzahl der Sätze, die das Subjekt enthalten
+    # 2 Anzahl der Sätze, die das Objekt enthalten / Anzahl der Sätze, die das Subjekt enthalten
     w_2 = len(wiki_n_occsent[obj]) / len(wiki_n_occsent[subj])
     if w_2 > 1.0:
         w_2 = 1.0
-    #3 Anzahl der Sätze die SUBJ und OBJ enthalten / Anzahl aller Sätze
+    # 3 Anzahl der Sätze die SUBJ und OBJ enthalten / Anzahl aller Sätze
     w_3 = len(wiki_n_occsent['collocation']) / wiki_n_sent
-    #4 Anzahl der Sätze mit Kollokation und gleichem synt. Muster wie Eingabe / Anzahl der Sätze mit Kollokation
+    # 4 Anzahl der Sätze mit Kollokation und gleichem synt. Muster wie Eingabe / Anzahl der Sätze mit Kollokation
     if wiki_n_occsent['collocation']:
         w_4 = len(wiki_equal) / len(wiki_n_occsent['collocation'])
     else:
@@ -100,12 +101,12 @@ def weighter(keywords, wikiContent, wiki_n_occsent, wiki_n_token, wiki_n_sent, w
 
     ## WOLFRAM WEIGHTS
 
-    #5 Frequenz der Objekttokens / Alle Tokkens
+    # 5 Frequenz der Objekttokens / Alle Tokkens
     w_5 = len(WA_n_token[obj]) / WA_n_alltoken
-    #6 Anzahl der Sätze mit Kollokation / Alle Sätze
+    # 6 Anzahl der Sätze mit Kollokation / Alle Sätze
     w_6 = len(WA_n_occsent['collocation']) / WA_n_sent
 
-    #7 Weight for persons & fictional characters
+    # 7 Weight for persons & fictional characters
     categories = ['Person', 'person', 'FictionalCharacter', 'fictional character']
     if WA_assumptions[0] in categories:
         w_7 = 1 if re.search(obj, WA_data['Basic information'], re.IGNORECASE) else 0
@@ -227,4 +228,4 @@ def trash():
                         print(token['ner'])
                 
 if __name__ == '__main__':
-    main("Frodo is a hobbit")
+    main("Heti is a ship")

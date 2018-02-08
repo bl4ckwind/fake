@@ -2,6 +2,7 @@ from nltk.tokenize import sent_tokenize
 import re
 from pprint import pprint
 
+
 def main(text, keywords):
     sentences = sent_tokenize(text)
     #print(sentences)
@@ -11,7 +12,7 @@ def main(text, keywords):
     occ = findOcc(sentences, keywords)
     freq = keywordFreq(text, keywords)
 
-    #"""
+    #"""PRINT
     for k, value in occ.items():
             print("Found", len(value), "sentence occassions for keyword", k)
             if k != 'collocation':
@@ -23,6 +24,8 @@ def main(text, keywords):
 
     return occ, freq, n_sent
 
+## Find occassions of keywords in sentences
+## Returns: {keyword_1: [sent1,...], ..., 'collocation': [sent1,...]}
 def findOcc(sentences, keywords):
     occ = dict()
     for keyword in keywords:
@@ -38,6 +41,9 @@ def findOcc(sentences, keywords):
                     occ[keyword].append(sent)
     return occ
 
+
+## Find keyword tokens
+## Returns {keyword_1: [token1,...]
 def keywordFreq(text, keywords):
     freq = dict()
     for keyword in keywords:
@@ -45,7 +51,8 @@ def keywordFreq(text, keywords):
     return freq
 
 
-
+## Clean sentces from:
+## Indicators, 1>len>1000
 def sentenceCleaning(sentences):
     for i in range(len(sentences)):
         sentences[i] = re.sub(r'(=){1,}\s.*\s(=){1,}', "", sentences[i])
