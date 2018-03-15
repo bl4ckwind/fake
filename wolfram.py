@@ -18,14 +18,16 @@ def main(term):
     content = content.replace('\\n', '')
     #    file.write(content)
     #"""
-    #tree = ET.parse("query.xml")
-    #tree = ET.fromstring(content)
-    #print(content)
+
+
     rawtext, data, assumptions = outputFormatting(content)
+
+    # Assumption handling for WA reults
     if assumptions:
         print("# Found", len(assumptions), "search results for", term, "#\n# Most likely:", assumptions[0], "#")
     else:
         print("# Found unambigous result")
+        print(data)
         assumptions = [re.search(r'\((.*)\)', data['Input interpretation']).group(1)]
         #print(data)
     #print(rawtext)
@@ -33,6 +35,8 @@ def main(term):
     return rawtext, data, assumptions
 
 
+## Process HTML-dump
+## Returns rawtext, {podtitle1:plaintext...}, [assumption1,...]
 def outputFormatting(output):
     data = dict()
     assumptions = []
