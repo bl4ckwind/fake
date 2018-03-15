@@ -28,7 +28,7 @@ Column 14: the context (venue / location of the speech or statement).
 """
 nlp = StanfordCoreNLP('http://localhost:9000')
 
-def main(statement):
+def main(statement, cache):
 
     """
     data = tools.csv_reader("dataset/train.tsv", sep="\t")
@@ -40,16 +40,28 @@ def main(statement):
     G = DependenciesToGraph(dep)
     ### Determine SUBJ and OBJ of a is-sentence
     keywords = determineSubjObj(G) #subj 0, obj 1
+    subj = keywords[0]
 
     ### Get Wiki content and do context analysis
     #"""
-    wikiContent = wiki.wikiSearch(keywords[0])
+    if subj not in cache:
+        wikiContent = wiki.wikiSearch(subj)
+        tools.streamToFile("cache/wiki_"+subj+".txt", wikiContent)
+    else:
+        wikiContent = tools.fileToStream("cache/wiki_"+subj+".txt")
+
     wiki_n_occsent, wiki_n_token, wiki_n_sent = context.main(wikiContent, keywords)
     #"""
 
     ### Get WA content and do context analysis
     #"""
-    WA_rawtext, WA_data, WA_assumptions = wolfram.main(keywords[0])
+    if subj not in cache:
+        WA_rawtext, WA_data, WA_assumptions = wolfram.main(subj)
+        stream = {"raw": WA_rawtext, "ass": WA_assumptions, "data": WA_data}
+        tools.json_maker(stream, "WA_"+subj+".json")
+    else:
+        stream = tools.json_loader("WA_"+subj, check=False)
+        WA_rawtext, WA_data, WA_assumptions = stream["raw"], stream["data"], stream["ass"]
     WA_n_occsent, WA_n_token, WA_n_sent = context.main(WA_rawtext, keywords)
     #"""
 
@@ -64,7 +76,7 @@ def main(statement):
     weights = weighter(keywords, wikiContent, wiki_n_occsent, wiki_n_token, wiki_n_sent, wiki_equal, WA_rawtext, WA_data, WA_assumptions, WA_n_occsent, WA_n_token, WA_n_sent)
 
 
-    return weights
+    return weights, subj
 
 def nlpRequest(nlp, text, annotators):
     text = (text)

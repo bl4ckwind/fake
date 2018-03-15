@@ -1,3 +1,0 @@
-- Query wiki and WA for all assumptions and take best result
-- NER
-- 

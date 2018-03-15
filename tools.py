@@ -10,6 +10,15 @@ def docReader(path_add):
     fn = os.path.join(os.path.dirname(__file__), path_add)
     return [fn + file for file in os.listdir(fn)]
 
+def fileToStream(path):
+    with open(path, "r", encoding="utf8") as file:
+        stream = file.read()
+    return stream
+
+def streamToFile(path, stream):
+    with open(path, "w", encoding="utf8") as file:
+        file.write(stream)
+
 def removeWithDate(processed_docs):
     keys = []
     for k, v in processed_docs.items():
@@ -48,17 +57,20 @@ def json_maker(processed_docs, filename):
     with open("JSON/" + filename, 'w', encoding="utf8") as f:
         json.dump(processed_docs, f)
 
-def json_loader(filename):
+def json_loader(filename, check=True):
     with open("JSON/" + filename + ".json", "r", encoding="utf8") as file:
         jsondump = json.load(file)
-    with open("JSON/checksum_" + filename + ".txt", "r", encoding="utf8") as file:
-        checksum = file.read().strip()
-    if checksum == json_checksum(jsondump):
-        print('Checksum:', checksum)
-        return jsondump
+    if check:
+        with open("JSON/checksum_" + filename + ".txt", "r", encoding="utf8") as file:
+            checksum = file.read().strip()
+        if checksum == json_checksum(jsondump):
+            print('Checksum:', checksum)
+            return jsondump
+        else:
+            print("CHECKSUM ERROR")
+            return 0
     else:
-        print("CHECKSUM ERROR")
-        return 0
+        return jsondump
 
 def json_search(jsondump, headline="", key="", value="", ID=""):
     print(key, value, ID)

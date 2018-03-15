@@ -1,7 +1,7 @@
 import wikipedia
 
 def main():
-    wikiSearch("Peregrin")
+    wikiSearch("Frodo")
 
 
 def wikiSearch(term):

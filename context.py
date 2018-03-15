@@ -30,18 +30,19 @@ def findOcc(sentences, keywords):
     occ['collocation'] = []
 
     for sent in sentences:
-        if all([re.search(keyword, sent, re.IGNORECASE) for keyword in keywords]):
+        if all([re.search(r'\b'+keyword+r'[es]{0,2}\b', sent, re.IGNORECASE) for keyword in keywords]):
             occ['collocation'].append(sent)
         else:
             for keyword in keywords:
-                if re.search(keyword, sent, re.IGNORECASE):
+                if re.search(r'\b'+keyword+r'[es]{0,2}\b', sent, re.IGNORECASE):
                     occ[keyword].append(sent)
+    print(occ)
     return occ
 
 def keywordFreq(text, keywords):
     freq = dict()
     for keyword in keywords:
-        freq[keyword] = re.findall(keyword, text, re.IGNORECASE)
+        freq[keyword] = re.findall(r'\b'+keyword+r'[es]{0,2}\b', text, re.IGNORECASE)
     return freq
 
 

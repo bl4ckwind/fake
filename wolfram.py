@@ -52,4 +52,4 @@ def outputFormatting(output):
     return rawtext, data, assumptions
 
 if __name__ == '__main__':
-    main("Pippin")
+    main("Frodo")
